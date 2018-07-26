@@ -1,0 +1,9 @@
+task Task1{
+  description "This is my first task"
+  doLast {
+    println "This is what I want to print"
+  }
+}
+
+
+task Task2 << {println "This is task5"}
