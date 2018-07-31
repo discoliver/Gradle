@@ -1,9 +1,86 @@
+//Tasks
+def projectPropertyLocal = "local"
+ext.projectPropertyExtend = "extent"
+
+task Task0 << {description "What is task dependency" println "This is task0, task 1 depends on me"}
+
 task Task1{
-  description "This is my first task"
+  description "How do tash phases work"
+  doFirst{
+    println "Task one - this is my do first - do first"
+  }
   doLast {
-    println "This is what I want to print"
+    println "This is my first print line - do last"
   }
 }
 
 
-task Task2 << {println "This is task5"}
+Task1.doLast {println "Task have different phase"}
+Task1.doLast {println "The three phases are initialization, configuration and excution "}
+Task1.doLast {println "eg. Description is configuration phase, and doLast is execution phase"}
+Task1.doFirst {println "I append another do first"}
+
+Task1.dependsOn Task0
+
+task Task2{
+  description "Multiple dependency"
+  dependsOn Task1
+  doLast{
+    println "Task 2 will depends on task1"
+  }
+}
+
+task Task3{
+  description "Project property"
+  doLast{
+    println "Task3 will print the project local property - $projectPropertyLocal"
+    println "Extend propety can be used anywhere - $projectPropertyExtend"
+
+  }
+}
+
+//Task dependency
+task TaskA{
+  doLast{ println "Task A" }
+}
+task TaskC{
+  doLast{ println "Task C" }
+}
+task TaskB{
+  doLast{ println "Task B" }
+}
+task TaskD{
+  doLast{ println "Task D" }
+}
+TaskA.dependsOn TaskB, TaskC, TaskD
+TaskB.shouldRunAfter TaskC  //after and should only kick in when there is a depends (linked)
+//TaskA.dependsOn TaskA
+TaskA.shouldRunAfter TaskA
+
+//inverse hierarchy
+task TaskE{
+  doLast{ println "Task E" }
+}
+TaskA.finalizedBy TaskE
+
+
+// <------ Ad-hoc Tasks
+//Def a task we can re-use, just configure it. ---> Typed Task
+task copyFiles (type: Copy){
+  from "/Users/boranwang/Documents/Github/Gradle/typedTask/src/A.txt"
+  into "/Users/boranwang/Documents/Github/Gradle/typedTask/dest"
+}
+def contentSpec = copySpec {
+  exclude {it.file.name.startsWith("B")}
+  from "/Users/boranwang/Documents/Github/Gradle/typedTask/src"
+}
+
+task copyFiles1 (type: Copy){
+  into "/Users/boranwang/Documents/Github/Gradle/typedTask/dest1"
+  with contentSpec
+}
+
+task copyFile2 (type: Copy){
+  with contentSpe
+  into "/Users/boranwang/Documents/Github/Gradle/typedTask/dest2"
+}
